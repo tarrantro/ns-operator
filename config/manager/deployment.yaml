@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ns-operator
+  namespace: ns-operator-system
+  labels:
+    app: ns-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ns-operator
+  template:
+    metadata:
+      labels:
+        app: ns-operator
+    spec:
+      serviceAccountName: ns-operator
+      containers:
+        - name: ns-operator
+          # Build and push with the Dockerfile in the repo root, then point
+          # this at your registry.
+          image: tarrantro/ns-operator:latest@sha256:53eb55ec03313ef8771c67479f28272369e7fafc45770b5fef455c70bde937d9
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

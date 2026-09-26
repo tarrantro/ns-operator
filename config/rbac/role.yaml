@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ns-operator
+rules:
+  # Watch Namespaces to find the ones labeled with a NamespaceClass.
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+
+  # Watch NamespaceClasses and record Status.ObservedKinds on them.
+  - apiGroups: ["namespaceclass.akuity.io"]
+    resources: ["namespaceclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["namespaceclass.akuity.io"]
+    resources: ["namespaceclasses/status"]
+    verbs: ["get", "update", "patch"]
+
+  # A NamespaceClass may declare any resource Kind in Spec.Resources, so the
+  # controller needs broad permission to create/update/delete whatever gets
+  # declared, and to list/delete orphans during pruning. This is an inherent
+  # tradeoff of supporting arbitrary Kinds — restrict with an admission
+  # policy or a Kind allow-list at the NamespaceClass level if this is too
+  # broad for your cluster's security posture.
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
